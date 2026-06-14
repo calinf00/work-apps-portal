@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import LogoutButton from '@/components/LogoutButton'
-import { Bolt, Squares } from '@/components/icons'
-import { Calendar, Car, LayoutGrid, type LucideIcon } from 'lucide-react'
+import { Squares } from '@/components/icons'
+import { Calendar, Car, LayoutGrid, Briefcase, type LucideIcon } from 'lucide-react'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   calendar: Calendar,
@@ -60,8 +60,8 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 h-14 flex items-center justify-between gap-2 sticky top-0 z-10">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 shrink-0 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Bolt className="w-4 h-4 text-white" /></div>
-          <span className="font-semibold text-gray-900 text-sm truncate">Portale Azienda</span>
+          <div className="w-7 h-7 shrink-0 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Briefcase className="w-4 h-4 text-white" /></div>
+          <span className="font-semibold text-gray-900 text-sm truncate">MyWork</span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {profile?.role === 'admin' && (

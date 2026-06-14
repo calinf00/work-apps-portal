@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portale Azienda",
-  description: "Portale applicazioni aziendali",
+  title: "MyWork",
+  description: "Il tuo portale di lavoro aziendale",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Portale",
+    title: "MyWork",
   },
 };
 
