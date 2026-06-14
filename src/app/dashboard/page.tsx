@@ -20,34 +20,44 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
 
   const apps = permissions?.map(p => p.apps).filter(Boolean) ?? []
+  const displayName = profile?.full_name || user.email || ''
+  const initials = displayName.slice(0, 2).toUpperCase()
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-gray-900">Work Apps</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">
-            {profile?.full_name || user.email}
-          </span>
+      <nav className="bg-white border-b border-gray-100 px-6 h-14 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center text-white text-xs">⚡</div>
+          <span className="font-semibold text-gray-900 text-sm">Work Apps</span>
+        </div>
+        <div className="flex items-center gap-2">
           {profile?.role === 'admin' && (
-            <a
-              href="/admin"
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Pannello Admin
+            <a href="/admin" className="text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors">
+              Admin
             </a>
           )}
-          <LogoutButton />
+          <div className="flex items-center gap-2 ml-1">
+            <div className="w-7 h-7 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center text-white text-xs font-semibold select-none">
+              {initials}
+            </div>
+            <LogoutButton />
+          </div>
         </div>
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Le tue applicazioni</h2>
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900">
+            Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''} 👋
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Seleziona un&apos;applicazione per iniziare</p>
+        </div>
 
         {apps.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-lg">Nessuna applicazione disponibile.</p>
-            <p className="text-sm mt-1">Contatta l&apos;amministratore per richiedere l&apos;accesso.</p>
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-3xl mb-4">📭</div>
+            <p className="text-gray-700 font-medium">Nessuna applicazione disponibile</p>
+            <p className="text-sm text-gray-400 mt-1">Contatta l&apos;amministratore per richiedere l&apos;accesso.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -55,16 +65,20 @@ export default async function DashboardPage() {
               <a
                 key={app.slug}
                 href={app.url || '#'}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer block"
+                className="group bg-white rounded-2xl border border-gray-100 p-6 hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100/80 transition-all duration-200 block"
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
-                  style={{ backgroundColor: app.color + '20' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 transition-transform duration-200 group-hover:scale-110"
+                  style={{ backgroundColor: app.color + '18' }}
                 >
                   {app.icon}
                 </div>
-                <h3 className="font-semibold text-gray-900">{app.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{app.description}</p>
+                <h3 className="font-semibold text-gray-900 mb-1">{app.name}</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">{app.description}</p>
+                <div className="mt-4 flex items-center gap-1 text-xs font-medium text-gray-300 group-hover:text-slate-500 transition-colors">
+                  <span>Apri</span>
+                  <span className="transition-transform duration-150 group-hover:translate-x-0.5">→</span>
+                </div>
               </a>
             ))}
           </div>
