@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import LogoutButton from '@/components/LogoutButton'
+import { Bolt, Squares } from '@/components/icons'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -48,7 +49,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-6 h-14 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center text-white text-xs">⚡</div>
+          <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Bolt className="w-4 h-4 text-white" /></div>
           <span className="font-semibold text-gray-900 text-sm">Work Apps</span>
         </div>
         <div className="flex items-center gap-2">
@@ -69,14 +70,14 @@ export default async function DashboardPage() {
       <main className="max-w-5xl mx-auto px-6 py-10">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900">
-            Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''} 👋
+            Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}
           </h2>
           <p className="text-sm text-gray-500 mt-1">Seleziona un&apos;applicazione per iniziare</p>
         </div>
 
         {apps.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-3xl mb-4">📭</div>
+            <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><Squares className="w-7 h-7 text-gray-400" /></div>
             <p className="text-gray-700 font-medium">Nessuna applicazione disponibile</p>
             <p className="text-sm text-gray-400 mt-1">Contatta l&apos;amministratore per richiedere l&apos;accesso.</p>
           </div>
@@ -92,7 +93,7 @@ export default async function DashboardPage() {
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 transition-transform duration-200 group-hover:scale-110"
                   style={{ backgroundColor: app.color + '18' }}
                 >
-                  {app.icon}
+                  <span>{app.icon}</span>
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">{app.name}</h3>
                 <p className="text-sm text-gray-400 leading-relaxed">{app.description}</p>

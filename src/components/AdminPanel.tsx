@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { CheckMark, Pencil, Plus } from '@/components/icons'
+import AdminEditUser, { type PortalUser } from '@/components/AdminEditUser'
 
 type User = { id: string; full_name: string | null; email: string; role: string; is_active: boolean; created_at: string }
 type App = { id: string; name: string; slug: string; icon: string; color: string }
@@ -16,6 +18,7 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
   const [newPassword, setNewPassword] = useState('')
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState('')
+  const [editingUser, setEditingUser] = useState<PortalUser | null>(null)
 
   function hasPermission(userId: string, appId: string) {
     return permissions.some(p => p.user_id === userId && p.app_id === appId)
@@ -59,6 +62,8 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
 
   return (
     <div className="flex flex-col gap-8">
+      {editingUser && <AdminEditUser user={editingUser} onClose={() => setEditingUser(null)} />}
+
       <section>
         <h2 className="text-base font-semibold text-gray-900 mb-4">Crea nuovo utente</h2>
         <form onSubmit={createUser} className="bg-white rounded-2xl border border-gray-100 p-6 max-w-xl">
@@ -69,7 +74,7 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                 type="text"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
                 placeholder="Mario Rossi"
               />
             </div>
@@ -80,7 +85,7 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                 required
                 value={newEmail}
                 onChange={e => setNewEmail(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
                 placeholder="mario@azienda.it"
               />
             </div>
@@ -93,7 +98,7 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
               minLength={6}
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
               placeholder="••••••••"
             />
           </div>
@@ -105,8 +110,9 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
           <button
             type="submit"
             disabled={creating}
-            className="bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
           >
+            <Plus className="w-4 h-4" />
             {creating ? 'Creazione...' : 'Crea utente'}
           </button>
         </form>
@@ -114,7 +120,7 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
 
       <section>
         <h2 className="text-base font-semibold text-gray-900 mb-4">Utenti e permessi</h2>
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
@@ -122,10 +128,11 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                 <th className="text-left px-5 py-3.5 text-xs font-medium text-gray-400 uppercase tracking-wide">Ruolo</th>
                 {apps.map(app => (
                   <th key={app.id} className="text-center px-4 py-3.5 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                    {app.icon} {app.name}
+                    {app.name}
                   </th>
                 ))}
                 <th className="text-center px-4 py-3.5 text-xs font-medium text-gray-400 uppercase tracking-wide">Attivo</th>
+                <th className="text-center px-4 py-3.5 text-xs font-medium text-gray-400 uppercase tracking-wide">Modifica</th>
               </tr>
             </thead>
             <tbody>
@@ -154,13 +161,13 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                       <button
                         onClick={() => togglePermission(user.id, app.id)}
                         title={hasPermission(user.id, app.id) ? 'Rimuovi accesso' : 'Concedi accesso'}
-                        className={`w-6 h-6 rounded-full flex items-center justify-center mx-auto transition-all text-xs ${
+                        className={`w-6 h-6 rounded-full flex items-center justify-center mx-auto transition-all ${
                           hasPermission(user.id, app.id)
                             ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                             : 'bg-gray-100 text-gray-300 hover:bg-gray-200'
                         }`}
                       >
-                        {hasPermission(user.id, app.id) ? '✓' : ''}
+                        {hasPermission(user.id, app.id) && <CheckMark className="w-3.5 h-3.5" />}
                       </button>
                     </td>
                   ))}
@@ -170,6 +177,21 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                       className={`relative w-10 h-5 rounded-full transition-colors ${user.is_active ? 'bg-emerald-500' : 'bg-gray-200'}`}
                     >
                       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${user.is_active ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                    </button>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <button
+                      onClick={() => setEditingUser({
+                        id: user.id,
+                        email: user.email,
+                        full_name: user.full_name,
+                        role: user.role,
+                        is_active: user.is_active,
+                      })}
+                      title="Modifica utente"
+                      className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>
