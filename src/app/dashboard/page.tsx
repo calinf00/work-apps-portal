@@ -2,6 +2,17 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import LogoutButton from '@/components/LogoutButton'
 import { Bolt, Squares } from '@/components/icons'
+import { Calendar, Car, LayoutGrid, type LucideIcon } from 'lucide-react'
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  calendar: Calendar,
+  car: Car,
+}
+
+function AppIcon({ name, className }: { name: string; className?: string }) {
+  const Icon = ICON_MAP[name] ?? LayoutGrid
+  return <Icon className={className ?? 'w-6 h-6'} />
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -50,7 +61,7 @@ export default async function DashboardPage() {
       <nav className="bg-white border-b border-gray-100 px-6 h-14 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Bolt className="w-4 h-4 text-white" /></div>
-          <span className="font-semibold text-gray-900 text-sm">Work Apps</span>
+          <span className="font-semibold text-gray-900 text-sm">Portale Azienda</span>
         </div>
         <div className="flex items-center gap-2">
           {profile?.role === 'admin' && (
@@ -90,10 +101,10 @@ export default async function DashboardPage() {
                 className="group bg-white rounded-2xl border border-gray-100 p-6 hover:border-gray-200 hover:shadow-lg hover:shadow-gray-100/80 transition-all duration-200 block"
               >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 transition-transform duration-200 group-hover:scale-110"
-                  style={{ backgroundColor: app.color + '18' }}
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-transform duration-200 group-hover:scale-110"
+                  style={{ backgroundColor: app.color + '18', color: app.color }}
                 >
-                  <span>{app.icon}</span>
+                  <AppIcon name={app.icon} className="w-6 h-6" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">{app.name}</h3>
                 <p className="text-sm text-gray-400 leading-relaxed">{app.description}</p>

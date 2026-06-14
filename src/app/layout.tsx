@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Work Apps",
+  title: "Portale Azienda",
   description: "Portale applicazioni aziendali",
 };
 
