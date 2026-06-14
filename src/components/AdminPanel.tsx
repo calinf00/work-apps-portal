@@ -6,7 +6,21 @@ import { useRouter } from 'next/navigation'
 import { CheckMark, Pencil, Plus } from '@/components/icons'
 import AdminEditUser, { type PortalUser } from '@/components/AdminEditUser'
 
-type User = { id: string; full_name: string | null; email: string; role: string; is_active: boolean; created_at: string }
+type User = {
+  id: string
+  full_name: string | null
+  email: string
+  role: string
+  is_active: boolean
+  created_at: string
+  company: string | null
+  team: string | null
+  job_title: string | null
+  hire_date: string | null
+  end_date: string | null
+  notes: string | null
+  annual_leave_days: number
+}
 type App = { id: string; name: string; slug: string; icon: string; color: string }
 type Permission = { user_id: string; app_id: string }
 
@@ -171,22 +185,31 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                       </button>
                     </td>
                   ))}
-                  <td className="px-4 py-4 text-center">
-                    <button
-                      onClick={() => toggleActive(user.id, user.is_active)}
-                      className={`relative w-10 h-5 rounded-full transition-colors ${user.is_active ? 'bg-emerald-500' : 'bg-gray-200'}`}
-                    >
-                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${user.is_active ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                    </button>
+                  <td className="px-4 py-4">
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => toggleActive(user.id, user.is_active)}
+                        className={`relative w-10 h-5 rounded-full transition-colors ${user.is_active ? 'bg-emerald-500' : 'bg-gray-200'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${user.is_active ? 'translate-x-5' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
                   </td>
                   <td className="px-4 py-4 text-center">
                     <button
                       onClick={() => setEditingUser({
-                        id: user.id,
-                        email: user.email,
-                        full_name: user.full_name,
-                        role: user.role,
-                        is_active: user.is_active,
+                        id:                user.id,
+                        email:             user.email,
+                        full_name:         user.full_name,
+                        role:              user.role,
+                        is_active:         user.is_active,
+                        company:           user.company,
+                        team:              user.team,
+                        job_title:         user.job_title,
+                        hire_date:         user.hire_date,
+                        end_date:          user.end_date,
+                        notes:             user.notes,
+                        annual_leave_days: user.annual_leave_days,
                       })}
                       title="Modifica utente"
                       className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"

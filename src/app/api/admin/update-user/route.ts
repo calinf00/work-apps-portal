@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { userId, email, password, full_name, role, is_active } = body
+  const { userId, email, password, full_name, role, is_active, company, team, hire_date, end_date, notes, job_title, annual_leave_days } = body
 
   if (!userId) {
     return NextResponse.json({ error: 'userId mancante' }, { status: 400 })
@@ -63,10 +63,17 @@ export async function POST(request: NextRequest) {
 
   // Update profile fields
   const profileUpdates: Record<string, unknown> = {}
-  if (full_name !== undefined) profileUpdates.full_name = full_name
-  if (email !== undefined) profileUpdates.email = email
-  if (role !== undefined) profileUpdates.role = role
-  if (is_active !== undefined) profileUpdates.is_active = is_active
+  if (full_name  !== undefined) profileUpdates.full_name  = full_name
+  if (email      !== undefined) profileUpdates.email      = email
+  if (role       !== undefined) profileUpdates.role       = role
+  if (is_active  !== undefined) profileUpdates.is_active  = is_active
+  if (company    !== undefined) profileUpdates.company    = company    || null
+  if (team       !== undefined) profileUpdates.team       = team       || null
+  if (job_title         !== undefined) profileUpdates.job_title         = job_title  || null
+  if (hire_date         !== undefined) profileUpdates.hire_date         = hire_date  || null
+  if (end_date          !== undefined) profileUpdates.end_date          = end_date   || null
+  if (notes             !== undefined) profileUpdates.notes             = notes      || null
+  if (annual_leave_days !== undefined) profileUpdates.annual_leave_days = annual_leave_days
 
   if (Object.keys(profileUpdates).length > 0) {
     const { error } = await adminClient.from('profiles').update(profileUpdates).eq('id', userId)

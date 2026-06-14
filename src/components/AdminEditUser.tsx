@@ -10,6 +10,13 @@ export type PortalUser = {
   full_name: string | null
   role: string
   is_active: boolean
+  company: string | null
+  team: string | null
+  job_title: string | null
+  hire_date: string | null
+  end_date: string | null
+  notes: string | null
+  annual_leave_days: number
 }
 
 export default function AdminEditUser({
@@ -21,14 +28,21 @@ export default function AdminEditUser({
 }) {
   const router = useRouter()
   const [form, setForm] = useState({
-    full_name: user.full_name ?? '',
-    email: user.email,
-    password: '',
-    role: user.role,
-    is_active: user.is_active,
+    full_name:         user.full_name         ?? '',
+    email:             user.email,
+    password:          '',
+    company:           user.company           ?? '',
+    team:              user.team              ?? '',
+    job_title:         user.job_title         ?? '',
+    hire_date:         user.hire_date         ?? '',
+    end_date:          user.end_date          ?? '',
+    notes:             user.notes             ?? '',
+    role:              user.role,
+    is_active:         user.is_active,
+    annual_leave_days: String(user.annual_leave_days ?? 20),
   })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]     = useState('')
 
   const set = (k: string, v: unknown) => setForm(f => ({ ...f, [k]: v }))
 
@@ -38,18 +52,25 @@ export default function AdminEditUser({
     setError('')
 
     const body: Record<string, unknown> = {
-      userId: user.id,
-      full_name: form.full_name,
-      role: form.role,
-      is_active: form.is_active,
+      userId:            user.id,
+      full_name:         form.full_name,
+      company:           form.company,
+      team:              form.team,
+      job_title:         form.job_title,
+      hire_date:         form.hire_date,
+      end_date:          form.end_date,
+      notes:             form.notes,
+      role:              form.role,
+      is_active:         form.is_active,
+      annual_leave_days: parseInt(form.annual_leave_days) || 20,
     }
     if (form.email !== user.email) body.email = form.email
     if (form.password) body.password = form.password
 
-    const res = await fetch('/api/admin/update-user', {
-      method: 'POST',
+    const res  = await fetch('/api/admin/update-user', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body:    JSON.stringify(body),
     })
     const data = await res.json()
     setLoading(false)
@@ -64,15 +85,20 @@ export default function AdminEditUser({
   const inputCls = 'w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-500 transition-colors bg-white'
   const labelCls = 'block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide'
 
+  const JOB_TITLES = ['Tecnico', 'Sviluppatore', 'Designer', 'Responsabile di team', 'Direzione', 'Commerciale', 'Amministrazione', 'Consulente']
+  const monthlyRate = (parseInt(form.annual_leave_days) / 12).toFixed(2)
+  const weeklyRate  = (parseInt(form.annual_leave_days) / 52).toFixed(2)
+
   return (
     <div
       className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-4"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
+        {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 shrink-0">
           <div>
-            <h3 className="font-semibold text-gray-900">Modifica utente</h3>
+            <h3 className="font-semibold text-gray-900">Modifica collaboratore</h3>
             <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
@@ -81,6 +107,8 @@ export default function AdminEditUser({
         </div>
 
         <form onSubmit={handleSubmit} className="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+
+          {/* Dati personali */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Dati personali</p>
             <div className="grid grid-cols-1 gap-3">
@@ -99,11 +127,77 @@ export default function AdminEditUser({
             </div>
           </div>
 
+          {/* Anagrafica lavorativa */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Anagrafica lavorativa</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Azienda</label>
+                <input type="text" value={form.company} onChange={e => set('company', e.target.value)} className={inputCls} placeholder="Es. XYZ Srl" />
+              </div>
+              <div>
+                <label className={labelCls}>Team</label>
+                <input type="text" value={form.team} onChange={e => set('team', e.target.value)} className={inputCls} placeholder="Es. Sviluppo" />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Ruolo professionale</label>
+                <input
+                  type="text"
+                  list="job-titles"
+                  value={form.job_title}
+                  onChange={e => set('job_title', e.target.value)}
+                  className={inputCls}
+                  placeholder="Es. Tecnico, Responsabile di team..."
+                />
+                <datalist id="job-titles">
+                  {JOB_TITLES.map(t => <option key={t} value={t} />)}
+                </datalist>
+              </div>
+              <div>
+                <label className={labelCls}>Inizio collaborazione</label>
+                <input type="date" value={form.hire_date} onChange={e => set('hire_date', e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Fine collaborazione</label>
+                <input type="date" value={form.end_date} onChange={e => set('end_date', e.target.value)} className={inputCls} min={form.hire_date || undefined} />
+              </div>
+              <div className="col-span-2">
+                <label className={labelCls}>Giorni di assenza / anno</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="365"
+                  value={form.annual_leave_days}
+                  onChange={e => set('annual_leave_days', e.target.value)}
+                  className={inputCls}
+                />
+                {parseInt(form.annual_leave_days) > 0 && (
+                  <p className="text-xs text-gray-400 mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                    Maturazione: <span className="font-medium text-gray-600">{monthlyRate} gg/mese</span> · <span className="font-medium text-gray-600">{weeklyRate} gg/settimana</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Note */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Note</p>
+            <textarea
+              rows={3}
+              value={form.notes}
+              onChange={e => set('notes', e.target.value)}
+              className={`${inputCls} resize-none`}
+              placeholder="Informazioni aggiuntive sul collaboratore..."
+            />
+          </div>
+
+          {/* Accesso */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Accesso</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Ruolo</label>
+                <label className={labelCls}>Ruolo sistema</label>
                 <select value={form.role} onChange={e => set('role', e.target.value)} className={inputCls}>
                   <option value="user">Collaboratore</option>
                   <option value="admin">Admin</option>
