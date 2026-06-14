@@ -14,12 +14,23 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  const { data: permissions } = await supabase
-    .from('user_app_permissions')
-    .select('app_id, apps(name, description, url, icon, color, slug)')
-    .eq('user_id', user.id)
+  const isAdmin = profile?.role === 'admin'
 
-  const apps = permissions?.map(p => p.apps).filter(Boolean) ?? []
+  const [{ data: permissions }, { data: allApps }] = await Promise.all([
+    isAdmin
+      ? Promise.resolve({ data: null })
+      : supabase
+          .from('user_app_permissions')
+          .select('app_id, apps(name, description, url, icon, color, slug)')
+          .eq('user_id', user.id),
+    isAdmin
+      ? supabase.from('apps').select('name, description, url, icon, color, slug').eq('is_active', true)
+      : Promise.resolve({ data: null }),
+  ])
+
+  const apps = isAdmin
+    ? (allApps ?? [])
+    : (permissions?.map(p => p.apps).filter(Boolean) ?? [])
   const displayName = profile?.full_name || user.email || ''
   const initials = displayName.slice(0, 2).toUpperCase()
 
