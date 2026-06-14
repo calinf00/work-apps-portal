@@ -57,6 +57,11 @@ export default async function DashboardPage() {
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
+        {/* DEBUG — rimuovere dopo il test */}
+        <pre className="mb-4 text-xs bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-yellow-900">
+          {JSON.stringify({ role: profile?.role, isAdmin, appsCount: apps.length, allAppsRaw: allApps }, null, 2)}
+        </pre>
+
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900">
             Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''} 👋
