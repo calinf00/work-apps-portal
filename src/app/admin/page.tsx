@@ -67,7 +67,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-6 h-14 flex items-center gap-3 sticky top-0 z-10">
+      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 h-14 flex items-center gap-3 sticky top-0 z-10">
         <a
           href="/dashboard"
           className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
@@ -79,7 +79,7 @@ export default async function AdminPage() {
         <h1 className="text-sm font-semibold text-gray-900">Pannello Admin</h1>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         {adminError && (
           <div className="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
             Errore di configurazione: {adminError}

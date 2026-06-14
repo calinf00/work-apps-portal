@@ -94,7 +94,7 @@ export default function AdminEditUser({
       className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-4"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] max-h-[90dvh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 shrink-0">
           <div>
@@ -130,7 +130,7 @@ export default function AdminEditUser({
           {/* Anagrafica lavorativa */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Anagrafica lavorativa</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Azienda</label>
                 <input type="text" value={form.company} onChange={e => set('company', e.target.value)} className={inputCls} placeholder="Es. XYZ Srl" />
@@ -195,7 +195,7 @@ export default function AdminEditUser({
           {/* Accesso */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Accesso</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Ruolo sistema</label>
                 <select value={form.role} onChange={e => set('role', e.target.value)} className={inputCls}>

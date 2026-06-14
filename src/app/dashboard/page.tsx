@@ -58,14 +58,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-6 h-14 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Bolt className="w-4 h-4 text-white" /></div>
-          <span className="font-semibold text-gray-900 text-sm">Portale Azienda</span>
+      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 h-14 flex items-center justify-between gap-2 sticky top-0 z-10">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 shrink-0 bg-slate-900 rounded-lg flex items-center justify-center text-white"><Bolt className="w-4 h-4 text-white" /></div>
+          <span className="font-semibold text-gray-900 text-sm truncate">Portale Azienda</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {profile?.role === 'admin' && (
-            <a href="/admin" className="text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors">
+            <a href="/admin" className="text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors">
               Admin
             </a>
           )}
@@ -78,8 +78,8 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <div className="mb-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <div className="mb-6 sm:mb-8">
           <h2 className="text-xl font-bold text-gray-900">
             Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}
           </h2>

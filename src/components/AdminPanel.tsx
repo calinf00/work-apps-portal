@@ -80,8 +80,8 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
 
       <section>
         <h2 className="text-base font-semibold text-gray-900 mb-4">Crea nuovo utente</h2>
-        <form onSubmit={createUser} className="bg-white rounded-2xl border border-gray-100 p-6 max-w-xl">
-          <div className="grid grid-cols-2 gap-4 mb-4">
+        <form onSubmit={createUser} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 max-w-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Nome</label>
               <input

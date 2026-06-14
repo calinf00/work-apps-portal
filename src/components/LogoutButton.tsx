@@ -18,7 +18,7 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       title="Esci"
-      className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
     >
       <LogOut className="w-4 h-4" />
     </button>
