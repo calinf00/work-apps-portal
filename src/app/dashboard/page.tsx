@@ -8,29 +8,39 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('full_name, role')
     .eq('id', user.id)
     .single()
 
+  if (profileError) {
+    console.error('[dashboard] failed to load profile:', profileError)
+  }
+
   const isAdmin = profile?.role === 'admin'
 
-  const [{ data: permissions }, { data: allApps }] = await Promise.all([
+  const [permRes, appsRes] = await Promise.all([
     isAdmin
-      ? Promise.resolve({ data: null })
+      ? Promise.resolve({ data: null, error: null })
       : supabase
           .from('user_app_permissions')
           .select('app_id, apps(name, description, url, icon, color, slug)')
           .eq('user_id', user.id),
     isAdmin
       ? supabase.from('apps').select('name, description, url, icon, color, slug').eq('is_active', true)
-      : Promise.resolve({ data: null }),
+      : Promise.resolve({ data: null, error: null }),
   ])
 
+  if (permRes.error) console.error('[dashboard] failed to load permissions:', permRes.error)
+  if (appsRes.error) console.error('[dashboard] failed to load apps:', appsRes.error)
+
+  // Supabase returns the embedded `apps` relation either as an object or a
+  // single-element array depending on the inferred cardinality; normalize both.
   const apps = isAdmin
-    ? (allApps ?? [])
-    : (permissions?.map(p => p.apps).filter(Boolean) ?? [])
+    ? (appsRes.data ?? [])
+    : ((permRes.data ?? [])
+        .flatMap(p => (Array.isArray(p.apps) ? p.apps : p.apps ? [p.apps] : [])))
   const displayName = profile?.full_name || user.email || ''
   const initials = displayName.slice(0, 2).toUpperCase()
 
@@ -57,11 +67,6 @@ export default async function DashboardPage() {
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
-        {/* DEBUG — rimuovere dopo il test */}
-        <pre className="mb-4 text-xs bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-yellow-900">
-          {JSON.stringify({ role: profile?.role, isAdmin, appsCount: apps.length, allAppsRaw: allApps }, null, 2)}
-        </pre>
-
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900">
             Ciao{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''} 👋
