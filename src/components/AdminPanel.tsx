@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { CheckMark, Pencil, Plus } from '@/components/icons'
 import AdminEditUser, { type PortalUser } from '@/components/AdminEditUser'
+import AdminCreateUser from '@/components/AdminCreateUser'
 
 type User = {
   id: string
@@ -28,11 +29,7 @@ type Permission = { user_id: string; app_id: string }
 export default function AdminPanel({ users, apps, permissions }: { users: User[]; apps: App[]; permissions: Permission[] }) {
   const supabase = createClient()
   const router = useRouter()
-  const [newEmail, setNewEmail] = useState('')
-  const [newName, setNewName] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [creating, setCreating] = useState(false)
-  const [message, setMessage] = useState('')
+  const [creatingUser, setCreatingUser] = useState(false)
   const [editingUser, setEditingUser] = useState<PortalUser | null>(null)
 
   function hasPermission(userId: string, appId: string) {
@@ -53,84 +50,20 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
     router.refresh()
   }
 
-  async function createUser(e: React.FormEvent) {
-    e.preventDefault()
-    setCreating(true)
-    setMessage('')
-    const res = await fetch('/api/admin/create-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: newEmail, password: newPassword, full_name: newName }),
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setMessage('Utente creato con successo.')
-      setNewEmail('')
-      setNewName('')
-      setNewPassword('')
-      router.refresh()
-    } else {
-      setMessage(`Errore: ${data.error}`)
-    }
-    setCreating(false)
-  }
-
   return (
     <div className="flex flex-col gap-8">
       {editingUser && <AdminEditUser user={editingUser} onClose={() => setEditingUser(null)} />}
+      {creatingUser && <AdminCreateUser onClose={() => setCreatingUser(false)} />}
 
-      <section>
-        <h2 className="text-base font-semibold text-gray-900 mb-4">Crea nuovo utente</h2>
-        <form onSubmit={createUser} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 max-w-xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Nome</label>
-              <input
-                type="text"
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
-                placeholder="Mario Rossi"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Email</label>
-              <input
-                type="email"
-                required
-                value={newEmail}
-                onChange={e => setNewEmail(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
-                placeholder="mario@azienda.it"
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Password temporanea</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-          {message && (
-            <p className={`text-sm px-4 py-2.5 rounded-xl mb-4 ${message.startsWith('Errore') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
-              {message}
-            </p>
-          )}
-          <button
-            type="submit"
-            disabled={creating}
-            className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
-          >
-            <Plus className="w-4 h-4" />
-            {creating ? 'Creazione...' : 'Crea utente'}
-          </button>
-        </form>
+      <section className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-gray-900">Crea nuovo utente</h2>
+        <button
+          onClick={() => setCreatingUser(true)}
+          className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          Crea utente
+        </button>
       </section>
 
       <section>
