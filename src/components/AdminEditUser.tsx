@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { XMark } from '@/components/icons'
+import { type AdminOptions } from '@/components/AdminSettings'
 
 export type PortalUser = {
   id: string
@@ -22,9 +23,11 @@ export type PortalUser = {
 
 export default function AdminEditUser({
   user,
+  options,
   onClose,
 }: {
   user: PortalUser
+  options: AdminOptions
   onClose: () => void
 }) {
   const router = useRouter()
@@ -88,7 +91,9 @@ export default function AdminEditUser({
   const inputCls = 'w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-500 transition-colors bg-white'
   const labelCls = 'block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide'
 
-  const JOB_TITLES = ['Tecnico', 'Sviluppatore', 'Designer', 'Responsabile di team', 'Direzione', 'Commerciale', 'Amministrazione', 'Consulente']
+  // Include il valore attuale tra le opzioni se non più presente in elenco (valori legacy)
+  const withCurrent = (list: string[], current: string) =>
+    current && !list.includes(current) ? [current, ...list] : list
   const riposiWeekly  = ((parseInt(form.annual_riposi_days)   || 0) / 52).toFixed(2)
   const permessiWeekly = ((parseInt(form.annual_permessi_days) || 0) / 52).toFixed(2)
 
@@ -136,25 +141,24 @@ export default function AdminEditUser({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Azienda</label>
-                <input type="text" value={form.company} onChange={e => set('company', e.target.value)} className={inputCls} placeholder="Es. XYZ Srl" />
+                <select value={form.company} onChange={e => set('company', e.target.value)} className={inputCls}>
+                  <option value="">— Seleziona —</option>
+                  {withCurrent(options.company, form.company).map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
               <div>
                 <label className={labelCls}>Team</label>
-                <input type="text" value={form.team} onChange={e => set('team', e.target.value)} className={inputCls} placeholder="Es. Sviluppo" />
+                <select value={form.team} onChange={e => set('team', e.target.value)} className={inputCls}>
+                  <option value="">— Seleziona —</option>
+                  {withCurrent(options.team, form.team).map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
               </div>
               <div className="col-span-2">
                 <label className={labelCls}>Ruolo professionale</label>
-                <input
-                  type="text"
-                  list="job-titles"
-                  value={form.job_title}
-                  onChange={e => set('job_title', e.target.value)}
-                  className={inputCls}
-                  placeholder="Es. Tecnico, Responsabile di team..."
-                />
-                <datalist id="job-titles">
-                  {JOB_TITLES.map(t => <option key={t} value={t} />)}
-                </datalist>
+                <select value={form.job_title} onChange={e => set('job_title', e.target.value)} className={inputCls}>
+                  <option value="">— Seleziona —</option>
+                  {withCurrent(options.job_title, form.job_title).map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
               </div>
               <div>
                 <label className={labelCls}>Inizio collaborazione</label>

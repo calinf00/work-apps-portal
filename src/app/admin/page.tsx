@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import AdminPanel from '@/components/AdminPanel'
+import { type AdminOptions } from '@/components/AdminSettings'
 import { ArrowLeft } from '@/components/icons'
 
 type User = {
@@ -41,24 +42,29 @@ export default async function AdminPage() {
   let users: User[] = []
   let apps: App[] = []
   let permissions: Permission[] = []
+  const options: AdminOptions = { company: [], team: [], job_title: [] }
 
   try {
     const admin = createAdminClient()
 
-    const [{ data: usersData, error: usersError }, { data: appsData, error: appsError }, { data: permsData, error: permsError }] = await Promise.all([
+    const [{ data: usersData, error: usersError }, { data: appsData, error: appsError }, { data: permsData, error: permsError }, { data: optionsData, error: optionsError }] = await Promise.all([
       admin.from('profiles').select('id, full_name, email, role, is_active, created_at, company, team, job_title, hire_date, end_date, notes, annual_riposi_days, annual_permessi_days').order('created_at'),
       admin.from('apps').select('id, name, slug, icon, color').eq('is_active', true),
       admin.from('user_app_permissions').select('user_id, app_id'),
+      admin.from('admin_options').select('category, value').order('value'),
     ])
 
-    if (usersError || appsError || permsError) {
-      const err = usersError ?? appsError ?? permsError
+    if (usersError || appsError || permsError || optionsError) {
+      const err = usersError ?? appsError ?? permsError ?? optionsError
       console.error('[admin] query error:', err)
       adminError = err!.message
     } else {
       users = (usersData as User[]) ?? []
       apps = (appsData as App[]) ?? []
       permissions = (permsData as Permission[]) ?? []
+      for (const o of (optionsData as { category: keyof AdminOptions; value: string }[]) ?? []) {
+        if (o.category in options) options[o.category].push(o.value)
+      }
     }
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e)
@@ -87,7 +93,7 @@ export default async function AdminPage() {
           </div>
         )}
 
-        <AdminPanel users={users} apps={apps} permissions={permissions} />
+        <AdminPanel users={users} apps={apps} permissions={permissions} options={options} />
       </main>
     </div>
   )

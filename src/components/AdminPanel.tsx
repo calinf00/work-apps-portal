@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { CheckMark, Pencil, Plus } from '@/components/icons'
+import { CheckMark, Pencil, Plus, Settings } from '@/components/icons'
 import AdminEditUser, { type PortalUser } from '@/components/AdminEditUser'
 import AdminCreateUser from '@/components/AdminCreateUser'
+import AdminSettings, { type AdminOptions } from '@/components/AdminSettings'
 
 type User = {
   id: string
@@ -26,11 +27,12 @@ type User = {
 type App = { id: string; name: string; slug: string; icon: string; color: string }
 type Permission = { user_id: string; app_id: string }
 
-export default function AdminPanel({ users, apps, permissions }: { users: User[]; apps: App[]; permissions: Permission[] }) {
+export default function AdminPanel({ users, apps, permissions, options }: { users: User[]; apps: App[]; permissions: Permission[]; options: AdminOptions }) {
   const supabase = createClient()
   const router = useRouter()
   const [creatingUser, setCreatingUser] = useState(false)
   const [editingUser, setEditingUser] = useState<PortalUser | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   function hasPermission(userId: string, appId: string) {
     return permissions.some(p => p.user_id === userId && p.app_id === appId)
@@ -52,18 +54,28 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
 
   return (
     <div className="flex flex-col gap-8">
-      {editingUser && <AdminEditUser user={editingUser} onClose={() => setEditingUser(null)} />}
-      {creatingUser && <AdminCreateUser onClose={() => setCreatingUser(false)} />}
+      {editingUser && <AdminEditUser user={editingUser} options={options} onClose={() => setEditingUser(null)} />}
+      {creatingUser && <AdminCreateUser options={options} onClose={() => setCreatingUser(false)} />}
+      {settingsOpen && <AdminSettings options={options} onClose={() => setSettingsOpen(false)} />}
 
       <section className="flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-gray-900">Crea nuovo utente</h2>
-        <button
-          onClick={() => setCreatingUser(true)}
-          className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Crea utente
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="inline-flex items-center gap-2 border border-gray-200 text-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+            Impostazioni
+          </button>
+          <button
+            onClick={() => setCreatingUser(true)}
+            className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Crea utente
+          </button>
+        </div>
       </section>
 
       <section>
