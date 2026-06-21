@@ -19,7 +19,8 @@ type User = {
   hire_date: string | null
   end_date: string | null
   notes: string | null
-  annual_leave_days: number
+  annual_riposi_days: number
+  annual_permessi_days: number
 }
 type App = { id: string; name: string; slug: string; icon: string; color: string }
 type Permission = { user_id: string; app_id: string }
@@ -208,8 +209,9 @@ export default function AdminPanel({ users, apps, permissions }: { users: User[]
                         job_title:         user.job_title,
                         hire_date:         user.hire_date,
                         end_date:          user.end_date,
-                        notes:             user.notes,
-                        annual_leave_days: user.annual_leave_days,
+                        notes:                user.notes,
+                        annual_riposi_days:   user.annual_riposi_days,
+                        annual_permessi_days: user.annual_permessi_days,
                       })}
                       title="Modifica utente"
                       className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"

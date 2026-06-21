@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { userId, email, password, full_name, role, is_active, company, team, hire_date, end_date, notes, job_title, annual_leave_days } = body
+  const { userId, email, password, full_name, role, is_active, company, team, hire_date, end_date, notes, job_title, annual_riposi_days, annual_permessi_days } = body
 
   if (!userId) {
     return NextResponse.json({ error: 'userId mancante' }, { status: 400 })
@@ -73,7 +73,8 @@ export async function POST(request: NextRequest) {
   if (hire_date         !== undefined) profileUpdates.hire_date         = hire_date  || null
   if (end_date          !== undefined) profileUpdates.end_date          = end_date   || null
   if (notes             !== undefined) profileUpdates.notes             = notes      || null
-  if (annual_leave_days !== undefined) profileUpdates.annual_leave_days = annual_leave_days
+  if (annual_riposi_days   !== undefined) profileUpdates.annual_riposi_days   = annual_riposi_days
+  if (annual_permessi_days !== undefined) profileUpdates.annual_permessi_days = annual_permessi_days
 
   if (Object.keys(profileUpdates).length > 0) {
     const { error } = await adminClient.from('profiles').update(profileUpdates).eq('id', userId)

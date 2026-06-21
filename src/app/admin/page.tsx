@@ -17,7 +17,8 @@ type User = {
   hire_date: string | null
   end_date: string | null
   notes: string | null
-  annual_leave_days: number
+  annual_riposi_days: number
+  annual_permessi_days: number
 }
 type App = { id: string; name: string; slug: string; icon: string; color: string }
 type Permission = { user_id: string; app_id: string }
@@ -45,7 +46,7 @@ export default async function AdminPage() {
     const admin = createAdminClient()
 
     const [{ data: usersData, error: usersError }, { data: appsData, error: appsError }, { data: permsData, error: permsError }] = await Promise.all([
-      admin.from('profiles').select('id, full_name, email, role, is_active, created_at, company, team, job_title, hire_date, end_date, notes, annual_leave_days').order('created_at'),
+      admin.from('profiles').select('id, full_name, email, role, is_active, created_at, company, team, job_title, hire_date, end_date, notes, annual_riposi_days, annual_permessi_days').order('created_at'),
       admin.from('apps').select('id, name, slug, icon, color').eq('is_active', true),
       admin.from('user_app_permissions').select('user_id, app_id'),
     ])
